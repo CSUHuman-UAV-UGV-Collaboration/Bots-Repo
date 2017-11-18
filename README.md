@@ -1,7 +1,8 @@
 # Bots-Repo - UAV-UGV collaboration
 
 ## Cleveland State University (Senior design)
-* Team Members
+=============================================
+## Team Members
   * Sujay Bajracharya
   * Austin Cassill
   * Lakiel Wade
