@@ -28,3 +28,9 @@
    
   to control the drone 
   * Coming Soon
+
+## Addtional Dependencies
+ * https://github.com/AutonomyLab/bebop_autonomy
+ * https://github.com/ethz-asl/mav_comm
+ * https://github.com/turtlebot/turtlebot
+ * https://github.com/ros-teleop/teleop_twist_keyboard
