@@ -34,3 +34,4 @@
  * https://github.com/ethz-asl/mav_comm
  * https://github.com/turtlebot/turtlebot
  * https://github.com/ros-teleop/teleop_twist_keyboard
+ * https://github.com/AutonomyLab/parrot_arsdk
