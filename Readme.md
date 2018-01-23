@@ -21,10 +21,10 @@
     
 ## Gazebo Simulator 
   With the Catkin_ws setup run 
-   *roslaunch rotors_gazebo bebop_hover.launch
+   * roslaunch rotors_gazebo bebop_hover.launch
   
   to control the turtlebot run
-   *roslaunch turtlebot_teleop  keyboard_teleop.launch
+   * roslaunch turtlebot_teleop  keyboard_teleop.launch
    
   to control the drone 
   * Coming Soon
