@@ -29,6 +29,13 @@
   to control the drone 
   * Coming Soon
 
+## ORB_SLAM2
+Github:
+ * https://github.com/raulmur/ORB_SLAM2
+run command:
+ * rosrun ORB_SLAM2 Mono [Vocabulary file] [settings file] /camera/image_raw:=/bebop/image_raw
+ * Example: rosrun ORB_SLAM2 Mono ./Vocabulary/ORBvoc.txt ./Examples/Monocular/TUM1.yaml /camera/image_raw:=/bebop/image_raw
+
 ## Addtional Dependencies
  * https://github.com/AutonomyLab/bebop_autonomy
  * https://github.com/ethz-asl/mav_comm
