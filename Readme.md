@@ -32,8 +32,15 @@
 ## ORB_SLAM2
 Github:
  * https://github.com/raulmur/ORB_SLAM2
- * run command: rosrun ORB_SLAM2 Mono [Vocabulary file] [settings file] /camera/image_raw:=/bebop/image_raw
- * Example: rosrun ORB_SLAM2 Mono ./Vocabulary/ORBvoc.txt ./Examples/Monocular/TUM1.yaml /camera/image_raw:=/bebop/image_raw
+
+Run command: 
+ * rosrun ORB_SLAM2 Mono [Vocabulary file] [settings file] /camera/image_raw:=/bebop/image_raw
+ * Example: rosrun ORB_SLAM2 Mono ./Vocabulary/ORBvoc.txt ~/Bots-Repo/Camera/bebop2_cam.yaml /camera/image_raw:=/bebop/image_raw
+
+Now we need a way save and load map
+
+Issues:
+ * We need to be able to save and load maps
 
 ## Addtional Dependencies
  * https://github.com/AutonomyLab/bebop_autonomy
