@@ -33,12 +33,11 @@
 Instructions to setup the network to control the bots from a remote computer.
 NOTE: must be on same network
 
-On the master PC
+<b2>On the master PC<b2/>
  * roscore
  * hostname -I
  * export ROS_IP=<yourip>
- <br/>
-On the slave PC
+<br/> <b2> On the slave PC<b2/> <br/>
  * export ROS_MASTER_URI=http//<masterip>:11311
  * hostname -I
  * export ROS_IP=<yourip>
