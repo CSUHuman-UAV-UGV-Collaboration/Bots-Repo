@@ -37,7 +37,7 @@ On the master PC
  * roscore
  * hostname -I
  * export ROS_IP=<yourip>
-On the slave PC
+\nOn the slave PC
  * export ROS_MASTER_URI=http//<masterip>:11311
  * hostname -I
  * export ROS_IP=<yourip>
