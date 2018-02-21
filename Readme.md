@@ -29,6 +29,19 @@
   to control the drone 
   * Coming Soon
 
+## Network Setup
+Instructions to setup the network to control the bots from a remote computer.
+NOTE: must be on same network
+
+On the master PC
+ * roscore
+ * hostname -I
+ * export ROS_IP=<yourip>
+On the slave PC
+ * export ROS_MASTER_URI=http//<masterip>:11311
+ * hostname -I
+ * export ROS_IP=<yourip>
+
 ## ORB_SLAM2
 Github:
  * https://github.com/raulmur/ORB_SLAM2
