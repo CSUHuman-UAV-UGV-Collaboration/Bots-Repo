@@ -64,4 +64,4 @@ Issues:
  * https://github.com/turtlebot/turtlebot
  * https://github.com/ros-teleop/teleop_twist_keyboard
  * https://github.com/AutonomyLab/parrot_arsdk
- * https://github.com/CSUHuman-UAV-UGV-Collaboration/ar_track_alvar.git
+ * https://github.com/CSUHuman-UAV-UGV-Collaboration/ar_track_alvar.git ##(Use Sudo apt-get ros-indigo-ar-track-alvar)
