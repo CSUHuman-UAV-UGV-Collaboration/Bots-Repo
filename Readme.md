@@ -33,14 +33,17 @@
 Instructions to setup the network to control the bots from a remote computer.
 NOTE: must be on same network
 
-On the master PC
+### On master PC
+  run these cmds
  * roscore
  * hostname -I
- * export ROS_IP=<yourip>
-On the slave PC
- * export ROS_MASTER_URI=http//<masterip>:11311
+ * export ROS_IP="yourip"
+
+### On slave PC
+  run these cmds
+ * export ROS_MASTER_URI=http//"masterip":11311
  * hostname -I
- * export ROS_IP=<yourip>
+ * export ROS_IP="yourip"
 
 ## ORB_SLAM2
 Github:
@@ -61,4 +64,4 @@ Issues:
  * https://github.com/turtlebot/turtlebot
  * https://github.com/ros-teleop/teleop_twist_keyboard
  * https://github.com/AutonomyLab/parrot_arsdk
- * https://github.com/CSUHuman-UAV-UGV-Collaboration/ar_track_alvar.git
+ * https://github.com/CSUHuman-UAV-UGV-Collaboration/ar_track_alvar.git (Use Sudo apt-get ros-kinetic-ar-track-alvar)
