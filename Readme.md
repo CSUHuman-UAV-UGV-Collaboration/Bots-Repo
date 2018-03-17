@@ -61,7 +61,6 @@ Issues:
 ## Addtional Dependencies
  * https://github.com/AutonomyLab/bebop_autonomy
  * https://github.com/ethz-asl/mav_comm
- * https://github.com/turtlebot/turtlebot
  * https://github.com/ros-teleop/teleop_twist_keyboard
  * https://github.com/AutonomyLab/parrot_arsdk
  * https://github.com/CSUHuman-UAV-UGV-Collaboration/ar_track_alvar.git (Use Sudo apt-get ros-kinetic-ar-track-alvar)
