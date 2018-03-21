@@ -9,6 +9,8 @@ int main(int argc, char **argv)
 
     ROS_INFO("main: instantiating an object of type RobotCollab");
     RobotCollab robotCollab(&nh);
+    string value = robotCollab.GetBotStateAsString(0);
+    ROS_INFO_STREAM("State as string: " << value);
 
     int searchCode;
     do
@@ -19,12 +21,12 @@ int main(int argc, char **argv)
         //TODO: add resource string for hard coded values
 
         //Tests-------------------------------------------------
-        botsapp::States state;
+        botsapp::TurtleStates state;
 
         //robotCollab.Search(state);
         // state.BotState = botsapp::States::MOVING;
         // robotCollab.PublishBotState(state);
-        //_------------------------------------------------------------
+        //------------------------------------------------------------
         cout << "--------------------------------------\n";
         cout << "What would you like me to do?\n";
         cout << "1 - Go Home\n";

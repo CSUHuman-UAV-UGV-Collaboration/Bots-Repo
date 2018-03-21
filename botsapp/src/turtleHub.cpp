@@ -11,14 +11,14 @@ using namespace std;
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
 // Global variable for updating and publishing the state
-botsapp::States _BotState;
+botsapp::TurtleStates _BotState;
 
-botsapp::States GetBotState()
+botsapp::TurtleStates GetBotState()
 {
     return _BotState;
 }
 
-void SetBotState(const botsapp::States &botState)
+void SetBotState(const botsapp::TurtleStates &botState)
 {
     _BotState = botState;
     ROS_INFO("myCallback activated: received value %d", _BotState.BotState);
@@ -46,11 +46,11 @@ bool Search(botsapp::TurtleDataRequest &request, botsapp::TurtleDataResponse &re
 
     ac.sendGoal(goal);
     //Set the bot state to Moving
-    _BotState.BotState = botsapp::States::MOVING;
+    _BotState.BotState = botsapp::TurtleStates::MOVING;
     ac.waitForResult();
 
     //Set the bot state to Stationary
-    _BotState.BotState = botsapp::States::STATIONARY;
+    _BotState.BotState = botsapp::TurtleStates::STATIONARY;
 
     if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
     {
@@ -86,11 +86,11 @@ bool GoHome(botsapp::TurtleDataRequest &request, botsapp::TurtleDataResponse &re
 
     ac.sendGoal(goal);
     //Set the bot state to Moving
-    _BotState.BotState = botsapp::States::MOVING;
+    _BotState.BotState = botsapp::TurtleStates::MOVING;
     ac.waitForResult();
 
     //Set the bot state to Stationary
-    _BotState.BotState = botsapp::States::STATIONARY;
+    _BotState.BotState = botsapp::TurtleStates::STATIONARY;
 
     if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
     {
@@ -111,13 +111,13 @@ int main(int argc, char **argv)
     ros::Rate loop_rate(1); // 1 message per second
 
     //TODO: Add a function to do system checks
-    _BotState.BotState = botsapp::States::STATIONARY;
+    _BotState.BotState = botsapp::TurtleStates::STATIONARY;
 
     // Turtlebot Subscribers
     ros::Subscriber turtleState_sub = nh.subscribe(botsapp::ResourceString::TOPIC_TURTLESTATE, 1, SetBotState);
 
     //Turtlebot Publishers
-    ros::Publisher turtleState_pub = nh.advertise<botsapp::States>(botsapp::ResourceString::TOPIC_TURTLESTATE, 1);
+    ros::Publisher turtleState_pub = nh.advertise<botsapp::TurtleStates>(botsapp::ResourceString::TOPIC_TURTLESTATE, 1);
 
     //Turtlebot Services
     ros::ServiceServer goHome_serv = nh.advertiseService(botsapp::ResourceString::SERV_GOHOME, GoHome);

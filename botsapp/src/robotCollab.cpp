@@ -41,10 +41,10 @@ void RobotCollab::InitializeServices()
 void RobotCollab::InitializePublishers()
 {
     ROS_INFO("Initializing Publishers");
-    turtleState_pub = nh_.advertise<botsapp::States>(botsapp::ResourceString::TOPIC_TURTLESTATE, 2);
+    turtleState_pub = nh_.advertise<botsapp::TurtleStates>(botsapp::ResourceString::TOPIC_TURTLESTATE, 2);
 }
 
-void RobotCollab::BotStateCallback(const botsapp::States &state)
+void RobotCollab::BotStateCallback(const botsapp::TurtleStates &state)
 {
     botState = state.BotState;
     //ROS_INFO("myCallback activated: received value %d", botState);
@@ -59,7 +59,7 @@ bool RobotCollab::GoHome()
     while (Moveable() != true)
     {
         ROS_INFO("Transitioning States");
-        ROS_INFO("Bot state: %d | Drone state: %d", botState, droneState);
+        ROS_INFO_STREAM("Bot state: " << GetBotStateAsString(botState));// << | Drone state: %d", , droneState);
 
         //TODO: code here for getting it into a moveable state.
         ros::spinOnce();
@@ -98,10 +98,12 @@ bool RobotCollab::GoHome()
 
 bool RobotCollab::Search(botsapp::Search msg)
 {
+    //TODO: fix duplicates by putting this in one function
     while (Moveable() != true)
     {
+        string botstateAsString = GetBotStateAsString(botState);
         ROS_INFO("Transitioning States");
-        ROS_INFO("Bot state: %d | Drone state: %d", botState, droneState);
+        ROS_INFO_STREAM("Bot state: " << GetBotStateAsString(botState));
 
         //TODO: code here for getting it into a moveable state.
         ros::spinOnce();
@@ -133,23 +135,36 @@ bool RobotCollab::Search(botsapp::Search msg)
 bool RobotCollab::Moveable()
 {
     //TODO: what if robot is given goal outside of this app check robot system for movements?
-    if (droneState == botsapp::States::DOCKED && botState == botsapp::States::STATIONARY)
+    if (droneState == botsapp::DroneStates::DOCKED && botState == botsapp::TurtleStates::STATIONARY)
         return true;
-    else
-        return false;
+    //else
+    //TODO: get bot or drone to right state
 }
 
 bool RobotCollab::CanLand()
 {
-    if (droneState == botsapp::States::FLYING && botState == botsapp::States::STATIONARY)
+    if (droneState == botsapp::DroneStates::FLYING && botState == botsapp::TurtleStates::STATIONARY)
         return true;
     else
         return false;
 }
 
-void RobotCollab::PublishBotState(botsapp::States msg)
+void RobotCollab::PublishBotState(botsapp::TurtleStates msg)
 {
     turtleState_pub.publish(msg);
     ros::Duration(1).sleep();
     turtleState_pub.publish(msg);
+}
+
+string RobotCollab::GetBotStateAsString(uint8_t state)
+{
+    switch (state)
+    {
+    case 0:
+        return botsapp::ResourceString::STATE_STATIONARY;
+    case 1:
+        return botsapp::ResourceString::STATE_MOVING;
+    default:
+        return "";
+    }
 }
