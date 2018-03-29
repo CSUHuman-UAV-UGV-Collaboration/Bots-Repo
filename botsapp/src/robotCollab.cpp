@@ -26,7 +26,10 @@ void RobotCollab::InitializeSubscribers()
 {
     ROS_INFO("Initializing Subscribers");
     turtleState_sub = nh_.subscribe(botsapp::ResourceString::TOPIC_TURTLESTATE, 1, &RobotCollab::BotStateCallback, this);
-    // add more subscribers here, as needed
+    turtleResponse_sub = nh_.subscribe(botsapp::ResourceString::TOPIC_TURTLERESPONSE, 1, &RobotCollab::BotResponseCallBack, this);
+
+    droneState_sub = nh_.subscribe(botsapp::ResourceString::TOPIC_DRONESTATE, 1, &RobotCollab::DroneStateCallback, this);
+    droneResponse_sub = nh_.subscribe(botsapp::ResourceString::TOPIC_DRONERESPONSE, 1, &RobotCollab::DroneResponseCallBack, this);
 }
 
 //member helper function to set up services:
@@ -41,13 +44,30 @@ void RobotCollab::InitializeServices()
 void RobotCollab::InitializePublishers()
 {
     ROS_INFO("Initializing Publishers");
-    turtleState_pub = nh_.advertise<botsapp::TurtleStates>(botsapp::ResourceString::TOPIC_TURTLESTATE, 2);
+    turtleRequest_pub = nh_.advertise<std_msgs::String>(botsapp::ResourceString::TOPIC_TURTLEREQUEST, 2);
+    droneRequest_pub = nh_.advertise<std_msgs::String>(botsapp::ResourceString::TOPIC_DRONEREQUEST, 2);
 }
 
 void RobotCollab::BotStateCallback(const botsapp::TurtleStates &state)
 {
     botState = state.BotState;
     //ROS_INFO("myCallback activated: received value %d", botState);
+}
+
+void RobotCollab::BotResponseCallBack(const std_msgs::String::ConstPtr &msg)
+{
+    turtleResponse = msg->data;
+}
+
+void RobotCollab::DroneStateCallback(const botsapp::TurtleStates &state)
+{
+    botState = state.BotState;
+    //ROS_INFO("myCallback activated: received value %d", botState);
+}
+
+void RobotCollab::DroneResponseCallBack(const std_msgs::String::ConstPtr &msg)
+{
+    droneResponse = msg->data;
 }
 
 bool RobotCollab::GoHome()
@@ -59,7 +79,7 @@ bool RobotCollab::GoHome()
     while (Moveable() != true)
     {
         ROS_INFO("Transitioning States");
-        ROS_INFO_STREAM("Bot state: " << GetBotStateAsString(botState));// << | Drone state: %d", , droneState);
+        ROS_INFO_STREAM("Bot state: " << GetBotStateAsString(botState)); // << | Drone state: %d", , droneState);
 
         //TODO: code here for getting it into a moveable state.
         ros::spinOnce();
@@ -96,40 +116,64 @@ bool RobotCollab::GoHome()
     // }
 }
 
-bool RobotCollab::Search(botsapp::Search msg)
+bool RobotCollab::Search(botsapp::Search searchMsg)
 {
+    turtleResponse = "0";
+    droneResponse = "0";
+
     //TODO: fix duplicates by putting this in one function
     while (Moveable() != true)
     {
-        string botstateAsString = GetBotStateAsString(botState);
         ROS_INFO("Transitioning States");
         ROS_INFO_STREAM("Bot state: " << GetBotStateAsString(botState));
+        //   ROS_INFO_STREAM("Drone state: " << GetBotStateAsString(botState));
 
         //TODO: code here for getting it into a moveable state.
         ros::spinOnce();
         ros::Duration(1.5).sleep(); // sleep for 1.5 second
     }
 
-    if (msg.useExternal == true)
+    if (searchMsg.useExternal == true)
     {
         //TODO: do something here to wait for rviz goal or some other external goal
     }
     else
     {
-        botsapp::TurtleData srv;
-        srv.request.x = msg.x;
-        srv.request.y = msg.y;
+        std_msgs::String msg;
+        msg.data = "search " +
+                   boost::lexical_cast<std::string>(searchMsg.x) +
+                   " " +
+                   boost::lexical_cast<std::string>(searchMsg.y);
+        turtleRequest_pub.publish(msg);
 
-        ROS_INFO("Searching...");
-
-        if (Search_Serv.call(srv))
+        while (turtleResponse == "0")
         {
-            return true;
+            ros::spinOnce();
+            ros::Duration(1.5).sleep(); // sleep for 1.5 second
         }
-        else
-            ROS_INFO("Something went horribly wrong in Search function");
+        turtleResponse = "0";
+
+        msg.data = "takeoff";
+        droneRequest_pub.publish(msg);
+
+        while (droneResponse == "0")
+        {
+            ros::spinOnce();
+            ros::Duration(1.5).sleep(); // sleep for 1.5 second
+        }
+
+        msg.data = "land";
+        droneRequest_pub.publish(msg);
+        droneResponse = "0";
+
+        while (droneResponse == "0")
+        {
+            ros::spinOnce();
+            ros::Duration(1.5).sleep(); // sleep for 1.5 second
+        }
+        return true;
     }
-    return false;
+    // TODO: Return false if something goes wrong..
 }
 
 bool RobotCollab::Moveable()
@@ -147,13 +191,6 @@ bool RobotCollab::CanLand()
         return true;
     else
         return false;
-}
-
-void RobotCollab::PublishBotState(botsapp::TurtleStates msg)
-{
-    turtleState_pub.publish(msg);
-    ros::Duration(1).sleep();
-    turtleState_pub.publish(msg);
 }
 
 string RobotCollab::GetBotStateAsString(uint8_t state)

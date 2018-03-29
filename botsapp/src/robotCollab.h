@@ -7,6 +7,7 @@
 #include <iostream>
 #include <std_msgs/String.h>
 #include <nav_msgs/Odometry.h>
+#include <boost/lexical_cast.hpp>
 #include "botsapp/TurtleStates.h"
 #include "botsapp/DroneStates.h"
 #include "botsapp/ResourceString.h"
@@ -22,19 +23,30 @@ class RobotCollab
     RobotCollab(ros::NodeHandle *nodehandle); //"main" will need to instantiate a ROS nodehandle, then pass it to the constructor
     bool GoHome();
     bool Search(botsapp::Search);
-    void PublishBotState(botsapp::TurtleStates);// TODO: this should probably be private
-  string GetBotStateAsString(uint8_t);
+    string GetBotStateAsString(uint8_t);
+
   private:
     // put private member data here;  "private" data will only be available to member functions of this class;
     ros::NodeHandle nh_; // we will need this, to pass between "main" and constructor
 
-    // Initializes robots Hubs;
-    ros::Publisher turtleState_pub;
+    // Initializes robots Hubs
+    string turtleResponse;
+    string droneResponse;
+
+    ros::Publisher turtleRequest_pub;
 
     ros::Subscriber turtleState_sub;
+    ros::Subscriber turtleResponse_sub;
 
+  //TODO: remove and send cmd to  request
     ros::ServiceClient GoHome_Serv;
     ros::ServiceClient Search_Serv;
+
+    //Initializes drone hub
+    ros::Publisher droneRequest_pub;
+
+    ros::Subscriber droneState_sub;
+    ros::Subscriber droneResponse_sub;
 
     void InitializeSubscribers();
     void InitializePublishers();
@@ -48,5 +60,9 @@ class RobotCollab
     
 
     void BotStateCallback(const botsapp::TurtleStates &state);
+    void BotResponseCallBack(const std_msgs::String::ConstPtr& msg);
+
+    void DroneStateCallback(const botsapp::TurtleStates &state);
+    void DroneResponseCallBack(const std_msgs::String::ConstPtr& msg);
 };
 #endif

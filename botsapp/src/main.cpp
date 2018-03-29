@@ -12,20 +12,17 @@ int main(int argc, char **argv)
     string value = robotCollab.GetBotStateAsString(0);
     ROS_INFO_STREAM("State as string: " << value);
 
+    bool completed;
+    botsapp::Search searchMsg;
     int searchCode;
     do
     {
-        bool completed;
-        botsapp::Search searchMsg;
-
-        //TODO: add resource string for hard coded values
 
         //Tests-------------------------------------------------
         botsapp::TurtleStates state;
 
         //robotCollab.Search(state);
         // state.BotState = botsapp::States::MOVING;
-        // robotCollab.PublishBotState(state);
         //------------------------------------------------------------
         cout << "--------------------------------------\n";
         cout << "What would you like me to do?\n";
@@ -45,7 +42,9 @@ int main(int argc, char **argv)
             break;
         case 2:
             cout << "Command to search\n";
-            searchMsg.useExternal = true;
+            searchMsg.useExternal = false;
+            searchMsg.x =5;
+            searchMsg.y =6.5;
             completed = robotCollab.Search(searchMsg);
             break;
 

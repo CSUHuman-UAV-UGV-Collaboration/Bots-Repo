@@ -115,13 +115,13 @@ int main(int argc, char **argv)
 
     // Turtlebot Subscribers
     ros::Subscriber turtleState_sub = nh.subscribe(botsapp::ResourceString::TOPIC_TURTLESTATE, 1, SetBotState);
-
+    
     //Turtlebot Publishers
     ros::Publisher turtleState_pub = nh.advertise<botsapp::TurtleStates>(botsapp::ResourceString::TOPIC_TURTLESTATE, 1);
 
     //Turtlebot Services
-    ros::ServiceServer goHome_serv = nh.advertiseService(botsapp::ResourceString::SERV_GOHOME, GoHome);
-    ros::ServiceServer search_serv = nh.advertiseService(botsapp::ResourceString::SERV_SEARCH, Search);
+    // ros::ServiceServer goHome_serv = nh.advertiseService(botsapp::ResourceString::SERV_GOHOME, GoHome);
+    // ros::ServiceServer search_serv = nh.advertiseService(botsapp::ResourceString::SERV_SEARCH, Search);
 
     ROS_INFO("tb_hub: Initiated. Waiting for new query.");
 
