@@ -12,7 +12,6 @@
 #include "botsapp/DroneStates.h"
 #include "botsapp/ResourceString.h"
 #include "botsapp/Search.h"
-#include "botsapp/TurtleData.h"
 
 using namespace std;
 
@@ -37,10 +36,6 @@ class RobotCollab
 
     ros::Subscriber turtleState_sub;
     ros::Subscriber turtleResponse_sub;
-
-  //TODO: remove and send cmd to  request
-    ros::ServiceClient GoHome_Serv;
-    ros::ServiceClient Search_Serv;
 
     //Initializes drone hub
     ros::Publisher droneRequest_pub;

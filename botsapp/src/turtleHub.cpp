@@ -2,9 +2,12 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
 #include <iostream>
+#include <string>
+#include <sstream>
 #include <std_msgs/String.h>
 #include <nav_msgs/Odometry.h>
-#include "robotCollab.h"
+#include "botsapp/TurtleStates.h"
+#include "botsapp/ResourceString.h"
 
 using namespace std;
 
@@ -12,31 +15,27 @@ typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseCl
 
 // Global variable for updating and publishing the state
 botsapp::TurtleStates _BotState;
+ros::Publisher turtleState_pub;
+ros::Publisher turtleResponse_pub;
 
-botsapp::TurtleStates GetBotState()
+void UpdateBotState(uint8_t botState)
 {
-    return _BotState;
+    _BotState.BotState = botState;
+    turtleState_pub.publish(_BotState);
 }
 
-void SetBotState(const botsapp::TurtleStates &botState)
-{
-    _BotState = botState;
-    ROS_INFO("myCallback activated: received value %d", _BotState.BotState);
-}
-
-bool Search(botsapp::TurtleDataRequest &request, botsapp::TurtleDataResponse &response)
+void Search(float x, float y)
 {
     //tell the action client that we want to spin a thread by default
     MoveBaseClient ac("move_base", true);
 
-    //TODO: Pass in (x,y)
     move_base_msgs::MoveBaseGoal goal;
 
     goal.target_pose.header.frame_id = "map";
     goal.target_pose.header.stamp = ros::Time::now();
 
-    goal.target_pose.pose.position.x = request.x;
-    goal.target_pose.pose.position.y = request.y;
+    goal.target_pose.pose.position.x = x;
+    goal.target_pose.pose.position.y = y;
     goal.target_pose.pose.orientation.w = 1;
 
     while (!ac.waitForServer(ros::Duration(3.0)))
@@ -46,25 +45,28 @@ bool Search(botsapp::TurtleDataRequest &request, botsapp::TurtleDataResponse &re
 
     ac.sendGoal(goal);
     //Set the bot state to Moving
-    _BotState.BotState = botsapp::TurtleStates::MOVING;
+    UpdateBotState(botsapp::TurtleStates::MOVING);
     ac.waitForResult();
 
     //Set the bot state to Stationary
-    _BotState.BotState = botsapp::TurtleStates::STATIONARY;
+    UpdateBotState(botsapp::TurtleStates::STATIONARY);
 
+    std_msgs::String msg;
     if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
     {
-        ROS_INFO("Navigated to (%f,%f)",request.x,request.y);
-        return true;
+        ROS_INFO("Navigated to (%f,%f)", x, y);
+        msg.data = "1";
+        turtleResponse_pub.publish(msg);
     }
     else
     {
-        ROS_INFO("Failed to navigate to (%f,%f)",request.x,request.y);
-        return false;
+        ROS_INFO("Failed to navigate to (%f,%f)", x, y);
+        msg.data = "0";
+        turtleResponse_pub.publish(msg);
     }
 }
 
-bool GoHome(botsapp::TurtleDataRequest &request, botsapp::TurtleDataResponse &response)
+void GoHome()
 {
     //tell the action client that we want to spin a thread by default
     MoveBaseClient ac("move_base", true);
@@ -86,21 +88,48 @@ bool GoHome(botsapp::TurtleDataRequest &request, botsapp::TurtleDataResponse &re
 
     ac.sendGoal(goal);
     //Set the bot state to Moving
-    _BotState.BotState = botsapp::TurtleStates::MOVING;
+    UpdateBotState(botsapp::TurtleStates::MOVING);
     ac.waitForResult();
 
     //Set the bot state to Stationary
-    _BotState.BotState = botsapp::TurtleStates::STATIONARY;
+    UpdateBotState(botsapp::TurtleStates::STATIONARY);
 
+    std_msgs::String msg;
     if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
     {
         ROS_INFO("Navigated to Home");
-        return true;
+        msg.data = "1";
+        turtleResponse_pub.publish(msg);
     }
     else
     {
         ROS_INFO("Failed to Navigate home");
-        return false;
+        msg.data = "0";
+        turtleResponse_pub.publish(msg);
+    }
+}
+
+void TurtleCommandsCB(const std_msgs::String::ConstPtr &msg)
+{
+    string xString, yString;
+    string cmdString;
+    std::string::size_type sz;
+
+    istringstream iss(msg->data.c_str());
+    iss >> cmdString;
+    iss >> xString;
+    iss >> yString;
+
+    float x = stof(xString);
+    float y = stof(yString);
+
+    if (cmdString == "search")
+    {
+        Search(x, y);
+    }
+    else if (cmdString == "home")
+    {
+        GoHome();
     }
 }
 
@@ -111,26 +140,17 @@ int main(int argc, char **argv)
     ros::Rate loop_rate(1); // 1 message per second
 
     //TODO: Add a function to do system checks
-    _BotState.BotState = botsapp::TurtleStates::STATIONARY;
+    UpdateBotState(botsapp::TurtleStates::STATIONARY);
 
     // Turtlebot Subscribers
-    ros::Subscriber turtleState_sub = nh.subscribe(botsapp::ResourceString::TOPIC_TURTLESTATE, 1, SetBotState);
-    
-    //Turtlebot Publishers
-    ros::Publisher turtleState_pub = nh.advertise<botsapp::TurtleStates>(botsapp::ResourceString::TOPIC_TURTLESTATE, 1);
+    ros::Subscriber turtleRequest_sub = nh.subscribe(botsapp::ResourceString::TOPIC_TURTLEREQUEST, 1, TurtleCommandsCB);
 
-    //Turtlebot Services
-    // ros::ServiceServer goHome_serv = nh.advertiseService(botsapp::ResourceString::SERV_GOHOME, GoHome);
-    // ros::ServiceServer search_serv = nh.advertiseService(botsapp::ResourceString::SERV_SEARCH, Search);
+    //Turtlebot Publishers
+    turtleState_pub = nh.advertise<botsapp::TurtleStates>(botsapp::ResourceString::TOPIC_TURTLESTATE, 1);
+    turtleResponse_pub = nh.advertise<std_msgs::String>(botsapp::ResourceString::TOPIC_TURTLERESPONSE, 1);
 
     ROS_INFO("tb_hub: Initiated. Waiting for new query.");
 
-    while (ros::ok())
-    {
-        turtleState_pub.publish(GetBotState());
-
-        ros::spinOnce();
-        loop_rate.sleep();
-    }
+    ros::spin();
     return 0;
 }

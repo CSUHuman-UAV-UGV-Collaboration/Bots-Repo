@@ -36,8 +36,6 @@ void RobotCollab::InitializeSubscribers()
 void RobotCollab::InitializeServices()
 {
     ROS_INFO("Initializing Services");
-    GoHome_Serv = nh_.serviceClient<botsapp::TurtleData>(botsapp::ResourceString::SERV_GOHOME);
-    Search_Serv = nh_.serviceClient<botsapp::TurtleData>(botsapp::ResourceString::SERV_SEARCH);
 }
 
 //member helper function to set up publishers;
@@ -87,13 +85,13 @@ bool RobotCollab::GoHome()
     }
 
     ROS_INFO("Headed Home");
-    botsapp::TurtleData srv;
-    if (GoHome_Serv.call(srv))
-    {
-        return true;
-    }
-    else
-        ROS_INFO("Something went horribly wrong in GoHome function");
+    //TODO: snd request to go home
+    // if (GoHome_Serv.call(srv))
+    // {
+    return true;
+    // }
+
+    ROS_INFO("Something went horribly wrong in GoHome function");
     return false;
 
     // std_msgs::String msg;
@@ -121,24 +119,27 @@ bool RobotCollab::Search(botsapp::Search searchMsg)
     turtleResponse = "0";
     droneResponse = "0";
 
-    //TODO: fix duplicates by putting this in one function
-    while (Moveable() != true)
-    {
-        ROS_INFO("Transitioning States");
-        ROS_INFO_STREAM("Bot state: " << GetBotStateAsString(botState));
-        //   ROS_INFO_STREAM("Drone state: " << GetBotStateAsString(botState));
-
-        //TODO: code here for getting it into a moveable state.
-        ros::spinOnce();
-        ros::Duration(1.5).sleep(); // sleep for 1.5 second
-    }
-
     if (searchMsg.useExternal == true)
     {
         //TODO: do something here to wait for rviz goal or some other external goal
     }
     else
     {
+        /*
+        Checks if the the robot state is moveable and moves to the destinantion.
+         keeps listening for turtleResponse to update before moving to next step. */
+
+        //TODO: fix duplicates by moving this in one function
+        while (Moveable() != true)
+        {
+            ROS_INFO("Transitioning States");
+            ROS_INFO_STREAM("Bot state: " << GetBotStateAsString(botState));
+            //   ROS_INFO_STREAM("Drone state: " << GetBotStateAsString(botState));
+
+            //TODO: code here for getting it into a moveable state.
+            ros::spinOnce();
+            ros::Duration(1.5).sleep(); // sleep for 1.5 second
+        }
         std_msgs::String msg;
         msg.data = "search " +
                    boost::lexical_cast<std::string>(searchMsg.x) +
@@ -153,6 +154,11 @@ bool RobotCollab::Search(botsapp::Search searchMsg)
         }
         turtleResponse = "0";
 
+        /*
+        Checks if the the drone state to assure it can fly and takes off.
+         keeps listening for droneResponse to update before moving to next step. */
+
+        // TODO: check state of drone and make sure its safe to take off
         msg.data = "takeoff";
         droneRequest_pub.publish(msg);
 
@@ -161,11 +167,15 @@ bool RobotCollab::Search(botsapp::Search searchMsg)
             ros::spinOnce();
             ros::Duration(1.5).sleep(); // sleep for 1.5 second
         }
-
-        msg.data = "land";
-        droneRequest_pub.publish(msg);
         droneResponse = "0";
 
+        /*
+        Checks if the the drone state to assure it can lan and land the drone.
+         keeps listening for droneResponse to update before moving to next step. */
+
+        // TODO: check state of drone and make sure its safe to Land
+        msg.data = "land";
+        droneRequest_pub.publish(msg);
         while (droneResponse == "0")
         {
             ros::spinOnce();
