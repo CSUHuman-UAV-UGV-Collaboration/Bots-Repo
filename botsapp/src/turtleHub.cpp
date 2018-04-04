@@ -111,6 +111,7 @@ void GoHome()
 
 void TurtleCommandsCB(const std_msgs::String::ConstPtr &msg)
 {
+    ROS_INFO("TurtleCommands init");
     string xString, yString;
     string cmdString;
     std::string::size_type sz;
@@ -139,15 +140,15 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
     ros::Rate loop_rate(1); // 1 message per second
 
-    //TODO: Add a function to do system checks
-    UpdateBotState(botsapp::TurtleStates::STATIONARY);
-
     // Turtlebot Subscribers
     ros::Subscriber turtleRequest_sub = nh.subscribe(botsapp::ResourceString::TOPIC_TURTLEREQUEST, 1, TurtleCommandsCB);
 
     //Turtlebot Publishers
     turtleState_pub = nh.advertise<botsapp::TurtleStates>(botsapp::ResourceString::TOPIC_TURTLESTATE, 1);
     turtleResponse_pub = nh.advertise<std_msgs::String>(botsapp::ResourceString::TOPIC_TURTLERESPONSE, 1);
+
+    //TODO: Add a function to do system checks
+    UpdateBotState(botsapp::TurtleStates::STATIONARY);
 
     ROS_INFO("tb_hub: Initiated. Waiting for new query.");
 

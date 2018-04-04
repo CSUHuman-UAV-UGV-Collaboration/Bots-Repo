@@ -1,11 +1,11 @@
 <launch>
 	<include file="$(find turtlebot_navigation)/launch/amcl_demo.launch">
-		<arg name="map_file" value="$(find botsApp)/Maps/BotLab.yaml"/>
+		<arg name="map_file" value="$(find botsapp)/Maps/BotLab.yaml"/>
 	</include>
 	<include file="$(find turtlebot_rviz_launchers)/launch/view_navigation.launch"/>
 
  	<include file="$(find turtlebot_bringup)/launch/minimal.launch"/>
 
-	<node pkg="botsApp" type="bots_turtle_node" name="bots_turtlehub" output="screen"/>
+	<node pkg="botsapp" type="bots_turtle_node" name="bots_turtlehub" output="screen"/>
 	<!-- <node pkg="botsApp" type="bots_main_node" name="bots_main" output="screen"/> -->
 </launch>

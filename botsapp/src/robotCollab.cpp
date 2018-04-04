@@ -146,7 +146,7 @@ bool RobotCollab::Search(botsapp::Search searchMsg)
                    " " +
                    boost::lexical_cast<std::string>(searchMsg.y);
         turtleRequest_pub.publish(msg);
-
+        ROS_INFO("Navigating to dest");
         while (turtleResponse == "0")
         {
             ros::spinOnce();
