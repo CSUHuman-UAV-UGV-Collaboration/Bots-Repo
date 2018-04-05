@@ -57,7 +57,7 @@ class RobotCollab
     void BotStateCallback(const botsapp::TurtleStates &state);
     void BotResponseCallBack(const std_msgs::String::ConstPtr& msg);
 
-    void DroneStateCallback(const botsapp::TurtleStates &state);
+    void DroneStateCallback(const botsapp::DroneStates &state);
     void DroneResponseCallBack(const std_msgs::String::ConstPtr& msg);
 };
 #endif
