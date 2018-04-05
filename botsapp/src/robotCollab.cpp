@@ -57,7 +57,7 @@ void RobotCollab::BotResponseCallBack(const std_msgs::String::ConstPtr &msg)
     turtleResponse = msg->data;
 }
 
-void RobotCollab::DroneStateCallback(const botsapp::TurtleStates &state)
+void RobotCollab::DroneStateCallback(const botsapp::DroneStates &state)
 {
     botState = state.BotState;
     //ROS_INFO("myCallback activated: received value %d", botState);
