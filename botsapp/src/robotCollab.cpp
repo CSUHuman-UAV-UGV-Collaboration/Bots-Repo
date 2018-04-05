@@ -59,7 +59,7 @@ void RobotCollab::BotResponseCallBack(const std_msgs::String::ConstPtr &msg)
 
 void RobotCollab::DroneStateCallback(const botsapp::DroneStates &state)
 {
-    botState = state.BotState;
+    botState = state.DroneState;
     //ROS_INFO("myCallback activated: received value %d", botState);
 }
 
