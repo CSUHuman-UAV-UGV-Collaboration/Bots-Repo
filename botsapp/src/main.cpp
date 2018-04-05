@@ -42,9 +42,11 @@ int main(int argc, char **argv)
             break;
         case 2:
             cout << "Command to search\n";
+            cout << "Enter x coord";
+            cin >> searchMsg.x;
+            cout << "Enter y coord";
+            cin >> searchMsg.y;
             searchMsg.useExternal = false;
-            searchMsg.x =5;
-            searchMsg.y =6.5;
             completed = robotCollab.Search(searchMsg);
             break;
 

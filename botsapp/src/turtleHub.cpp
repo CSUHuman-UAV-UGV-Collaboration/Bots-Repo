@@ -61,7 +61,8 @@ void Search(float x, float y)
     else
     {
         ROS_INFO("Failed to navigate to (%f,%f)", x, y);
-        msg.data = "0";
+        //TODO: handle error
+        msg.data = "2";
         turtleResponse_pub.publish(msg);
     }
 }
