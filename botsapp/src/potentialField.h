@@ -2,44 +2,50 @@
 #define POTENTIALFIELD_H
 
 #include <ros/ros.h>
-#include <move_base_msgs/MoveBaseAction.h>
-#include <actionlib/client/simple_action_client.h>
 #include <iostream>
-#include <std_msgs/String.h>
-#include <nav_msgs/Odometry.h>
-#include <boost/lexical_cast.hpp>
-#include "botsapp/TurtleStates.h"
-#include "botsapp/DroneStates.h"
-#include "botsapp/ResourceString.h"
-#include "botsapp/Search.h"
 
-using namespace std;
+#include <nav_msgs/OccupancyGrid.h>
+#include <nav_msgs/GetMap.h>
+#include <geometry_msgs/PoseWithCovariance.h>
+#include <vector>
+#include <math.h>
 
-struct pixel
+struct Pixel
 {
-    float x;
-    float y;
+  float x;
+  float y;
+  int occupancyValue;
+};
+
+struct Potential
+{
+  float magnitude;
+  float direction;
 };
 
 // define a class, including a constructor, member variables and member functions
 class PotentialField
 {
-  public:
-    PotentialField(ros::NodeHandle *nodehandle); //"main" will need to instantiate a ROS nodehandle, then pass it to the constructor
-    pixel GetOpenSpace(pixel robotLocation);
+public:
+  PotentialField(ros::NodeHandle *nodehandle); //"main" will need to instantiate a ROS nodehandle, then pass it to the constructor
+  Pixel GetSpaceInRange(geometry_msgs::PoseWithCovariance, nav_msgs::OccupancyGrid);
 
-  private:
-    // put private member data here;  "private" data will only be available to member functions of this class;
-    ros::NodeHandle nh_; // we will need this, to pass between "main" and constructor
+private:
+  // put private member data here;  "private" data will only be available to member functions of this class;
+  ros::NodeHandle nh_; // we will need this, to pass between "main" and constructor
 
-    void InitializeSubscribers();
-    void InitializePublishers();
-    void InitializeServices();
+  void InitializeSubscribers();
+  void InitializePublishers();
+  void InitializeServices();
 
-    //list of obstacles
-    vector<pixel> obstacles;
+  //list of pixels
+  std::vector<Pixel> obstacles;
+  std::vector<Pixel> frees;
+  std::vector<Pixel> allSpaces;
+  int range;
 
-    void GetObstacles();
-    float RepulsivePotential(pixel point, pixel obstacle);
+  void GetObstacles();
+  float RepulsivePotential(Pixel point, Pixel obstacle);
+  std::vector<std::vector<Pixel>> ConvertTo2DArray(int, int, int[]);
 };
 #endif

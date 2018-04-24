@@ -1,6 +1,7 @@
 // this header incorporates all the necessary #include files and defines the class "robotCollab"
 #include "robotCollab.h"
 
+
 //CONSTRUCTOR:  this will get called whenever an instance of this class is created
 // want to put all dirty work of initializations here
 // odd syntax: have to pass nodehandle pointer into constructor for constructor to build subscribers, etc
@@ -160,6 +161,21 @@ bool RobotCollab::Search(botsapp::Search searchMsg)
 
         // TODO: check state of drone and make sure its safe to take off
         msg.data = "takeoff";
+        droneRequest_pub.publish(msg);
+
+        while (droneResponse == "0")
+        {
+            ros::spinOnce();
+            ros::Duration(1.5).sleep(); // sleep for 1.5 second
+        }
+        droneResponse = "0";
+
+        /*
+        Checks if the the drone state to assure it can lan and land the drone.
+         keeps listening for droneResponse to update before moving to next step. */
+
+        // TODO: check state of drone and make sure its safe to Land
+        msg.data = "search";
         droneRequest_pub.publish(msg);
 
         while (droneResponse == "0")
