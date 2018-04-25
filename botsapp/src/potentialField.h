@@ -10,6 +10,11 @@
 #include <vector>
 #include <math.h>
 
+#define PI 3.14159265
+// temp values
+#define RHO_0 10
+#define ETA 10
+
 struct Pixel
 {
   float x;
@@ -19,8 +24,8 @@ struct Pixel
 
 struct Potential
 {
-  float magnitude;
-  float direction;
+  float x;
+  float y;
 };
 
 // define a class, including a constructor, member variables and member functions
@@ -29,6 +34,7 @@ class PotentialField
 public:
   PotentialField(ros::NodeHandle *nodehandle); //"main" will need to instantiate a ROS nodehandle, then pass it to the constructor
   Pixel GetSpaceInRange(geometry_msgs::PoseWithCovariance, nav_msgs::OccupancyGrid);
+  Pixel GetFreePose();
 
 private:
   // put private member data here;  "private" data will only be available to member functions of this class;
