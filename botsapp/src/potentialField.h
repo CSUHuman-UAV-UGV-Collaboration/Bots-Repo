@@ -45,7 +45,7 @@ private:
   int range;
 
   void GetObstacles();
-  float RepulsivePotential(Pixel point, Pixel obstacle);
+  Potential RepulsivePotential(Pixel pixel, Pixel obstacle);
   std::vector<std::vector<Pixel>> ConvertTo2DArray(int, int, int[]);
 };
 #endif

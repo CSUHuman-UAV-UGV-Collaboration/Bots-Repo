@@ -133,6 +133,25 @@ std::vector<std::vector<Pixel>> PotentialField::ConvertTo2DArray(int height, int
     return tempGrid;
 }
 
-float PotentialField::RepulsivePotential(Pixel point, Pixel obstacle)
+Potential PotentialField::RepulsivePotential(Pixel pixel, Pixel obstacle)
 {
+
+    // Euclidean distance rho
+    float x = obstacle.x - pixel.x;
+    float y = obstacle.y - pixel.y;
+    float rho;
+    Potential u;
+
+    rho = std::pow(x, 2) + std::pow(y, 2);
+    rho = std::sqrt(rho);
+
+    u.direction = atan2(y, x);
+
+    // TODO: rho_0, eta constants
+    if (rho < rho_0)
+        u.magnitude = 0.5 * eta * std::pow((1/rho - 1/rho_0), 2);
+    else
+        u.magnitude = 0;
+
+    return u;
 }
