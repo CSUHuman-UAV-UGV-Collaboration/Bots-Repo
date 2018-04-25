@@ -141,17 +141,56 @@ Potential PotentialField::RepulsivePotential(Pixel pixel, Pixel obstacle)
     float y = obstacle.y - pixel.y;
     float rho;
     Potential u;
+    float direction;
+    float magnitude;
 
     rho = std::pow(x, 2) + std::pow(y, 2);
     rho = std::sqrt(rho);
 
-    u.direction = atan2(y, x);
+    direction = atan2(y, x);
 
     // TODO: rho_0, eta constants
-    if (rho < rho_0)
-        u.magnitude = 0.5 * eta * std::pow((1/rho - 1/rho_0), 2);
+    if (rho < RHO_0)
+        magnitude = 0.5 * ETA * std::pow((1/rho - 1/RHO_0), 2);
     else
-        u.magnitude = 0;
+        magnitude = 0;
+
+    u.x = magnitude * cos(direction * PI / 180.0);
+    u.y = magnitude * sin(direction * PI / 180.0);
 
     return u;
+}
+
+Pixel PotentialField::GetFreePose()
+{
+    Pixel current;
+    Pixel obstacle;
+    Potential potential;
+    Potential currentPotential;
+    float min = 99999;
+    Pixel minPixel;
+    float mag = 0;
+
+    for(int i; i < PotentialField::frees.size(); i++) 
+    {
+        current = PotentialField::frees[i];
+        for(int j; j < PotentialField::obstacles.size(); j++)
+        {
+            obstacle = PotentialField::obstacles[j];
+            currentPotential = RepulsivePotential(current, obstacle);
+            potential.x += currentPotential.x;
+            potential.y += currentPotential.y;
+        }
+
+        mag = sqrt(pow(potential.x, 2) + pow(potential.y, 2));
+
+        if(mag < min)
+        {
+            min = mag;
+            minPixel.x = current.x;
+            minPixel.y = current.y;
+        }
+    }
+
+    return minPixel;
 }
