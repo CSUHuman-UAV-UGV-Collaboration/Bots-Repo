@@ -23,6 +23,7 @@ class RobotCollab
     bool GoHome();
     bool Search(botsapp::Search);
     string GetBotStateAsString(uint8_t);
+    string GetDroneStateAsString(uint8_t);
 
   private:
     // put private member data here;  "private" data will only be available to member functions of this class;

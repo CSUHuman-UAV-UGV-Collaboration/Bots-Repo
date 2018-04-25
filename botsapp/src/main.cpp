@@ -12,9 +12,9 @@ int main(int argc, char **argv)
     RobotCollab robotCollab(&nh);
     string value = robotCollab.GetBotStateAsString(0);
     ROS_INFO_STREAM("State as string: " << value);
-   
+
     // potential field TEST
-     geometry_msgs::PoseWithCovariance pose;
+    geometry_msgs::PoseWithCovariance pose;
 
     pose.pose.position.x = 2.0;
     pose.pose.position.y = -2.4;
@@ -29,6 +29,11 @@ int main(int argc, char **argv)
 
         PotentialField potentialField(&nh);
         potentialField.GetSpaceInRange(pose, grid);
+        Pixel freePose = potentialField.GetFreePose();
+
+        cout << freePose.x;
+        cout << freePose.y;
+        cout << "\n";
     }
 
     bool completed;

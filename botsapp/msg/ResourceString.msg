@@ -13,3 +13,6 @@ string NODE_TURTLEHUB = turtle_hub
 
 string STATE_STATIONARY = Stationary
 string STATE_MOVING = Moving
+string STATE_DOCKED = Docked
+string STATE_FLYING = Flying
+string STATE_LANDING = Landing

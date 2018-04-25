@@ -1,7 +1,6 @@
 // this header incorporates all the necessary #include files and defines the class "robotCollab"
 #include "robotCollab.h"
 
-
 //CONSTRUCTOR:  this will get called whenever an instance of this class is created
 // want to put all dirty work of initializations here
 // odd syntax: have to pass nodehandle pointer into constructor for constructor to build subscribers, etc
@@ -11,13 +10,6 @@ RobotCollab::RobotCollab(ros::NodeHandle *nodehandle) : nh_(*nodehandle)
     InitializeSubscribers();
     InitializePublishers();
     InitializeServices();
-
-    //initialize variables and test here, as needed
-
-    //TODO Check if Robot hubs are alive
-
-    // ROS_INFO_STREAM("Stationary = " << botsapp::States::STATIONARY);
-    // ROS_INFO_STREAM("MOVING = " << botsapp::States::MOVING);
 }
 
 //member helper function to set up subscribers;
@@ -204,11 +196,24 @@ bool RobotCollab::Search(botsapp::Search searchMsg)
 
 bool RobotCollab::Moveable()
 {
-    //TODO: what if robot is given goal outside of this app check robot system for movements?
-    if (droneState == botsapp::DroneStates::DOCKED && botState == botsapp::TurtleStates::STATIONARY)
-        return true;
-    //else
-    //TODO: get bot or drone to right state
+    bool moveable = false;
+    int count = 0;
+    while (moveable != true || count < 6)
+    {
+        if (droneState == botsapp::DroneStates::DOCKED && botState == botsapp::TurtleStates::STATIONARY)
+            return true;
+        else
+        {
+            count++;
+            ROS_INFO("Transitioning States");
+            ROS_INFO_STREAM("Bot state: " << GetBotStateAsString(botState));
+            ROS_INFO_STREAM("Drone state: " << GetDroneStateAsString(droneState));
+
+            //TODO: code here for getting it into a moveable state.
+            ros::spinOnce();
+            ros::Duration(1.5).sleep(); // sleep for 1.5 second
+        }
+    }
 }
 
 bool RobotCollab::CanLand()
@@ -227,6 +232,20 @@ string RobotCollab::GetBotStateAsString(uint8_t state)
         return botsapp::ResourceString::STATE_STATIONARY;
     case 1:
         return botsapp::ResourceString::STATE_MOVING;
+    default:
+        return "";
+    }
+}
+string RobotCollab::GetDroneStateAsString(uint8_t state)
+{
+    switch (state)
+    {
+    case 0:
+        return botsapp::ResourceString::STATE_DOCKED;
+    case 1:
+        return botsapp::ResourceString::STATE_FLYING;
+    case 2:
+        return botsapp::ResourceString::STATE_LANDING;
     default:
         return "";
     }

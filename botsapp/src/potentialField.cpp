@@ -7,43 +7,10 @@
 PotentialField::PotentialField(ros::NodeHandle *nodehandle) : nh_(*nodehandle)
 { // constructor
     ROS_INFO("Potential Field Constructor");
-    InitializeSubscribers();
-    InitializePublishers();
-    InitializeServices();
-
     //initialize variables and test here, as needed
 }
 
-//member helper function to set up subscribers;
-// note odd syntax: &robotCollab::subscriberCallback is a pointer to a member function of robotCollab
-// "this" keyword is required, to refer to the current instance of robotCollab
-void PotentialField::InitializeSubscribers()
-{
-    ROS_INFO("Initializing Subscribers");
-
-    // TODO initialize here
-}
-
-//member helper function to set up services:
-void PotentialField::InitializeServices()
-{
-    ROS_INFO("Initializing Services");
-}
-
-//member helper function to set up publishers;
-void PotentialField::InitializePublishers()
-{
-    ROS_INFO("Initializing Publishers");
-
-    // TODO initialize here
-}
-
-// // callbacks here
-// void PotentialField::Callback()
-// {
-// }
-
-Pixel PotentialField::GetSpaceInRange(geometry_msgs::PoseWithCovariance robotPose, nav_msgs::OccupancyGrid map)
+void PotentialField::GetSpaceInRange(geometry_msgs::PoseWithCovariance robotPose, nav_msgs::OccupancyGrid map)
 {
     int map_height, map_width;
     float map_resolution;
@@ -73,11 +40,11 @@ Pixel PotentialField::GetSpaceInRange(geometry_msgs::PoseWithCovariance robotPos
     std::cout << "\n";
 
     // get all spaces in range
-    range = 5;
-    int top = std::max(0, (int)robotLocation.y - range);
-    int bottom = std::min((int)robotLocation.y + range, map_height);
-    int left = std::max(0, (int)robotLocation.x - range);
-    int right = std::min((int)robotLocation.x + range, map_width);
+    
+    int top = std::max(0, (int)robotLocation.y - RANGE);
+    int bottom = std::min((int)robotLocation.y + RANGE, map_height);
+    int left = std::max(0, (int)robotLocation.x - RANGE);
+    int right = std::min((int)robotLocation.x + RANGE, map_width);
 
     std::cout << "Top: " << top;
     std::cout << "bottom: " << bottom;
@@ -149,7 +116,6 @@ Potential PotentialField::RepulsivePotential(Pixel pixel, Pixel obstacle)
 
     direction = atan2(y, x);
 
-    // TODO: rho_0, eta constants
     if (rho < RHO_0)
         magnitude = 0.5 * ETA * std::pow((1/rho - 1/RHO_0), 2);
     else

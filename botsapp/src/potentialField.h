@@ -14,6 +14,7 @@
 // temp values
 #define RHO_0 10
 #define ETA 10
+#define RANGE 5
 
 struct Pixel
 {
@@ -33,22 +34,17 @@ class PotentialField
 {
 public:
   PotentialField(ros::NodeHandle *nodehandle); //"main" will need to instantiate a ROS nodehandle, then pass it to the constructor
-  Pixel GetSpaceInRange(geometry_msgs::PoseWithCovariance, nav_msgs::OccupancyGrid);
+  void GetSpaceInRange(geometry_msgs::PoseWithCovariance, nav_msgs::OccupancyGrid);
   Pixel GetFreePose();
 
 private:
   // put private member data here;  "private" data will only be available to member functions of this class;
   ros::NodeHandle nh_; // we will need this, to pass between "main" and constructor
 
-  void InitializeSubscribers();
-  void InitializePublishers();
-  void InitializeServices();
-
   //list of pixels
   std::vector<Pixel> obstacles;
   std::vector<Pixel> frees;
   std::vector<Pixel> allSpaces;
-  int range;
 
   void GetObstacles();
   Potential RepulsivePotential(Pixel pixel, Pixel obstacle);
