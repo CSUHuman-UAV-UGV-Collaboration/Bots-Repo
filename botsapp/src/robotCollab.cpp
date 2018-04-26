@@ -123,73 +123,66 @@ bool RobotCollab::Search(botsapp::Search searchMsg)
          keeps listening for turtleResponse to update before moving to next step. */
 
         //TODO: fix duplicates by moving this in one function
-        while (Moveable() != true)
+        if (Moveable())
         {
-            ROS_INFO("Transitioning States");
-            ROS_INFO_STREAM("Bot state: " << GetBotStateAsString(botState));
-            //   ROS_INFO_STREAM("Drone state: " << GetBotStateAsString(botState));
+            std_msgs::String msg;
+            msg.data = "search " +
+                       boost::lexical_cast<std::string>(searchMsg.x) +
+                       " " +
+                       boost::lexical_cast<std::string>(searchMsg.y);
+            turtleRequest_pub.publish(msg);
+            ROS_INFO("Navigating to dest");
+            while (turtleResponse == "0")
+            {
+                ros::spinOnce();
+                ros::Duration(1.5).sleep(); // sleep for 1.5 second
+            }
+            turtleResponse = "0";
 
-            //TODO: code here for getting it into a moveable state.
-            ros::spinOnce();
-            ros::Duration(1.5).sleep(); // sleep for 1.5 second
-        }
-        std_msgs::String msg;
-        msg.data = "search " +
-                   boost::lexical_cast<std::string>(searchMsg.x) +
-                   " " +
-                   boost::lexical_cast<std::string>(searchMsg.y);
-        turtleRequest_pub.publish(msg);
-        ROS_INFO("Navigating to dest");
-        while (turtleResponse == "0")
-        {
-            ros::spinOnce();
-            ros::Duration(1.5).sleep(); // sleep for 1.5 second
-        }
-        turtleResponse = "0";
-
-        /*
+            /*
         Checks if the the drone state to assure it can fly and takes off.
          keeps listening for droneResponse to update before moving to next step. */
 
-        // TODO: check state of drone and make sure its safe to take off
-        msg.data = "takeoff";
-        droneRequest_pub.publish(msg);
+            // TODO: check state of drone and make sure its safe to take off
+            msg.data = "takeoff";
+            droneRequest_pub.publish(msg);
 
-        while (droneResponse == "0")
-        {
-            ros::spinOnce();
-            ros::Duration(1.5).sleep(); // sleep for 1.5 second
-        }
-        droneResponse = "0";
+            while (droneResponse == "0")
+            {
+                ros::spinOnce();
+                ros::Duration(1.5).sleep(); // sleep for 1.5 second
+            }
+            droneResponse = "0";
 
-        /*
+            /*
         Checks if the the drone state to assure it can lan and land the drone.
          keeps listening for droneResponse to update before moving to next step. */
 
-        // TODO: check state of drone and make sure its safe to Land
-        msg.data = "search";
-        droneRequest_pub.publish(msg);
+            // TODO: check state of drone and make sure its safe to Land
+            msg.data = "search";
+            droneRequest_pub.publish(msg);
 
-        while (droneResponse == "0")
-        {
-            ros::spinOnce();
-            ros::Duration(1.5).sleep(); // sleep for 1.5 second
-        }
-        droneResponse = "0";
+            while (droneResponse == "0")
+            {
+                ros::spinOnce();
+                ros::Duration(1.5).sleep(); // sleep for 1.5 second
+            }
+            droneResponse = "0";
 
-        /*
+            /*
         Checks if the the drone state to assure it can lan and land the drone.
          keeps listening for droneResponse to update before moving to next step. */
 
-        // TODO: check state of drone and make sure its safe to Land
-        msg.data = "land";
-        droneRequest_pub.publish(msg);
-        while (droneResponse == "0")
-        {
-            ros::spinOnce();
-            ros::Duration(1.5).sleep(); // sleep for 1.5 second
+            // TODO: check state of drone and make sure its safe to Land
+            msg.data = "land";
+            droneRequest_pub.publish(msg);
+            while (droneResponse == "0")
+            {
+                ros::spinOnce();
+                ros::Duration(1.5).sleep(); // sleep for 1.5 second
+            }
+            return true;
         }
-        return true;
     }
     // TODO: Return false if something goes wrong..
 }

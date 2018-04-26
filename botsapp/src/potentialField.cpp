@@ -13,8 +13,6 @@ PotentialField::PotentialField(ros::NodeHandle *nodehandle) : nh_(*nodehandle)
 void PotentialField::GetSpaceInRange(geometry_msgs::PoseWithCovariance robotPose, nav_msgs::OccupancyGrid map)
 {
     int map_height, map_width;
-    float map_resolution;
-    geometry_msgs::Pose map_origin;
     Pixel robotLocation;
 
     map_height = map.info.height;
@@ -40,7 +38,7 @@ void PotentialField::GetSpaceInRange(geometry_msgs::PoseWithCovariance robotPose
     std::cout << "\n";
 
     // get all spaces in range
-    
+
     int top = std::max(0, (int)robotLocation.y - RANGE);
     int bottom = std::min((int)robotLocation.y + RANGE, map_height);
     int left = std::max(0, (int)robotLocation.x - RANGE);
@@ -61,18 +59,23 @@ void PotentialField::GetSpaceInRange(geometry_msgs::PoseWithCovariance robotPose
             newPix.y = j;
             newPix.occupancyValue = grid[i][j].occupancyValue;
             allSpaces.push_back(newPix);
-            std::cout << newPix.x << newPix.y << " ";
+            // std::cout << newPix.x << newPix.y << " ";
+            std::cout << newPix.occupancyValue << " ";
         }
         std::cout << "\n";
     }
 
     for (int space = 0; space < allSpaces.size(); space++)
     {
-        if(allSpaces[space].occupancyValue == 100)
+        if (allSpaces[space].occupancyValue == 100)
             obstacles.push_back(allSpaces[space]);
-        else if(allSpaces[space].occupancyValue == 0)
+        else if (allSpaces[space].occupancyValue == 0)
             frees.push_back(allSpaces[space]);
     }
+
+    std::cout << "Total Spaces: " << allSpaces.size() << std::endl;
+    std::cout << "Obstacles Spaces: " << obstacles.size() << std::endl;
+    std::cout << "Free Space: " << frees.size() << std::endl;
 
     //Trinary
     // The standard interpretation is the trinary interpretation, i.e. interpret all values so that the output ends up being one of three values.
@@ -87,7 +90,6 @@ void PotentialField::GetSpaceInRange(geometry_msgs::PoseWithCovariance robotPose
 std::vector<std::vector<Pixel>> PotentialField::ConvertTo2DArray(int height, int width, int data[])
 {
     std::vector<std::vector<Pixel>> tempGrid(height, std::vector<Pixel>(width));
-
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
@@ -117,7 +119,7 @@ Potential PotentialField::RepulsivePotential(Pixel pixel, Pixel obstacle)
     direction = atan2(y, x);
 
     if (rho < RHO_0)
-        magnitude = 0.5 * ETA * std::pow((1/rho - 1/RHO_0), 2);
+        magnitude = 0.5 * ETA * std::pow((1 / rho - 1 / RHO_0), 2);
     else
         magnitude = 0;
 
@@ -137,12 +139,12 @@ Pixel PotentialField::GetFreePose()
     Pixel minPixel;
     float mag = 0;
 
-    for(int i; i < PotentialField::frees.size(); i++) 
+    for (int i = 0; i < frees.size(); i++)
     {
-        current = PotentialField::frees[i];
-        for(int j; j < PotentialField::obstacles.size(); j++)
+        current = frees[i];
+        for (int j = 0; j < obstacles.size(); j++)
         {
-            obstacle = PotentialField::obstacles[j];
+            obstacle = obstacles[j];
             currentPotential = RepulsivePotential(current, obstacle);
             potential.x += currentPotential.x;
             potential.y += currentPotential.y;
@@ -150,13 +152,15 @@ Pixel PotentialField::GetFreePose()
 
         mag = sqrt(pow(potential.x, 2) + pow(potential.y, 2));
 
-        if(mag < min)
+        if (mag < min)
         {
             min = mag;
             minPixel.x = current.x;
             minPixel.y = current.y;
         }
     }
-
-    return minPixel;
+    Pixel robotLocation;
+    robotLocation.x = (minPixel.x * map_resolution) + map_origin.position.x;
+    robotLocation.y = (minPixel.y * map_resolution) + map_origin.position.y;
+    return robotLocation;
 }

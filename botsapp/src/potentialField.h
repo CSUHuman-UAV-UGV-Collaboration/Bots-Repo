@@ -3,18 +3,18 @@
 
 #include <ros/ros.h>
 #include <iostream>
-
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/GetMap.h>
 #include <geometry_msgs/PoseWithCovariance.h>
 #include <vector>
+#include <string>
 #include <math.h>
 
 #define PI 3.14159265
 // temp values
 #define RHO_0 10
 #define ETA 10
-#define RANGE 5
+#define RANGE 50
 
 struct Pixel
 {
@@ -36,6 +36,7 @@ public:
   PotentialField(ros::NodeHandle *nodehandle); //"main" will need to instantiate a ROS nodehandle, then pass it to the constructor
   void GetSpaceInRange(geometry_msgs::PoseWithCovariance, nav_msgs::OccupancyGrid);
   Pixel GetFreePose();
+  //TODO: add a deconstructor
 
 private:
   // put private member data here;  "private" data will only be available to member functions of this class;
@@ -45,6 +46,9 @@ private:
   std::vector<Pixel> obstacles;
   std::vector<Pixel> frees;
   std::vector<Pixel> allSpaces;
+
+  float map_resolution;
+  geometry_msgs::Pose map_origin;
 
   void GetObstacles();
   Potential RepulsivePotential(Pixel pixel, Pixel obstacle);

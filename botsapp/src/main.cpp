@@ -10,8 +10,6 @@ int main(int argc, char **argv)
 
     ROS_INFO("main: instantiating an object of type RobotCollab");
     RobotCollab robotCollab(&nh);
-    string value = robotCollab.GetBotStateAsString(0);
-    ROS_INFO_STREAM("State as string: " << value);
 
     // potential field TEST
     geometry_msgs::PoseWithCovariance pose;
